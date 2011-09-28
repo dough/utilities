@@ -1,0 +1,14 @@
+This is a program I have used for years to prepare examples for students,
+and that they can use to prepare descriptions and downloads for me.
+
+It creates listings of the programs (colorization soon to come),
+and any other file you care to give, and allows you to provide
+a preface (in your own html or in MarkDown -- recently added under the
+influence of GitHub:-).  Soon I expect to allow you to use MarkDown to
+comment individually on each listing.
+
+The listings each are prefixed with a caret so you can return to the
+original list, and go on to the next one.  This is convenient for code
+readthroughs and such.
+
+This uses the wonderful package MarkdownJ for doing the markdown.
