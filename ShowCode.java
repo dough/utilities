@@ -50,13 +50,13 @@ public class ShowCode{
     b.append(htmlTitle);
     b.append(", by doug@mscs.mu.edu");
     b.append("</title>\n");
-//    b.append ("<link type=\"text/css\" rel=\"stylesheet\" href=\"/style.css\">");
     b.append("</head>\n");
     b.append("<body>\n");
     b.append("<h3 align=\"center\">");
     b.append(htmlHeader);
     b.append("</h3>\n");
     b.append("<table align=\"center\" width=\"600\">\n");
+
     if (!markdownFileName.equals("")){
       b.append("<tr>\n");
       b.append("<td>\n");
@@ -64,6 +64,7 @@ public class ShowCode{
       b.append("</td>\n");
       b.append("</tr>\n");
     }
+
     if (!prefaceFileName.equals("")){
       b.append("<tr>\n");
       b.append("<td>\n");
@@ -71,6 +72,7 @@ public class ShowCode{
       b.append("</td>\n");
       b.append("</tr>\n");
     }
+
     if (!zipFileName.equals("")){
       b.append("<tr>\n");
       b.append("<td>\n");
@@ -78,6 +80,8 @@ public class ShowCode{
       b.append("</td>\n");
       b.append("</tr>\n");
     }
+
+// Creating the Code links section
     b.append("<tr>\n");
     b.append("<td>\n");
     b.append("<h4><a name=\"top\">Code links</a></h4>\n");
@@ -86,11 +90,15 @@ public class ShowCode{
       makeFileNameElement(args[j]);
     }
     b.append("</dl>\n");
+
+// Creating the Listings
     b.append("<h4>Listings</h4>");
     b.append("<dl>\n");
+// Creating the wrapped code Listings
     for (int j = 0;j<args.length;j++){
       makeFileCodeElement(args[j]);
     }
+
     b.append("</dl>\n");
     b.append("</td>\n");
     b.append("</tr>\n");
@@ -109,7 +117,7 @@ public class ShowCode{
     b.append("</a></dt>\n");
   }
 
-  static public void makeFileCodeElement(String s){
+  static public void makeFileCodeElement(String s) throws Exception{
     b.append("<dt><a href=\"#top\" name=\"");
     b.append(s);
     b.append("\">^&nbsp;</a>");
@@ -120,8 +128,18 @@ public class ShowCode{
     b.append("</dd>\n");
   }
 
-  static public void makeFileListing(String s){
-    try{
+  static public void makeFileListing(String s) throws Exception{
+      String descFileName = s+".mkd";
+      File fm = new File(descFileName);
+      if (fm.exists()){
+        b.append("<dd>\n");
+        b.append("<dl>\n");
+        b.append("<table>\n");
+        doMarkdown(descFileName);       
+        b.append("</dd>\n");
+        b.append("</dl>\n");
+        b.append("</table>\n");
+      }
       b.append("<pre><code>");
       File f = new File(s);
       char[] a = new char[(int)f.length()];
@@ -129,16 +147,9 @@ public class ShowCode{
       i.read(a);
       b.append(editFileListing(new String(a)));
       b.append("\n</code></pre>\n");
-    } catch(FileNotFoundException x){
-      System.err.println(x.getClass().getName()+" says "+x.getMessage());
-      System.exit(1);
-    } catch(IOException x){
-      System.err.println(x.getClass().getName()+" says "+x.getMessage());
-      System.exit(2);
-    }
   }
 
-  static public String editFileListing(String s){
+  static public String editFileListing(String s) throws Exception{
     s = (pamp.matcher(s)).replaceAll("\\&amp;");
     s = (plt.matcher(s)).replaceAll("\\&lt;");
     s = (pgt.matcher(s)).replaceAll("\\&gt;");
