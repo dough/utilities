@@ -1,4 +1,4 @@
-## about showcode.sh
+## About showcode.sh
 
 This is showcode.sh.mkd
 Right now it is shown when the file is specified and it exists.  It does not need to be specified

@@ -1,4 +1,3 @@
-## heading for ShowCode.java
+## about ShowCode.java
 These are some miscellaneous comments about it.
-
 There should not be too many
