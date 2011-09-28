@@ -1,0 +1,20 @@
+Sometimes when wishing to include an XML document within another document which treats the "angle brackets" and other special symbols in a special way, we need to modify the document to be included by replacing
+
+    the character "&" with the XML entity "&",
+
+    the character "<" with the XML entity "<",
+
+    and the character ">" with the XML entity ">", 
+
+The showcode tool can be used to perform this replacement by using the flag -W and saving the stdout to a file of your choice. It is my custom to use the original filename suffixed with the extension ".wrap" for this purpose, as in the following example:
+
+if [ 0 == $# ]
+then
+  FILEBASE="index"
+else
+  FILEBASE=`basename $1 .xml`
+fi
+
+xsltproc --xinclude -o ${FILEBASE}.html /opt/docbook-xsl-1.74.0/html/docbook.xsl ${FILEBASE}.xml 
+
+

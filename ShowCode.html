@@ -55,7 +55,6 @@ to describe what is going on
 <dt><a href="#ShowCode.java">ShowCode.java</a></dt>
 <dt><a href="#ShowCode.mkd">ShowCode.mkd</a></dt>
 <dt><a href="#showcode.sh">showcode.sh</a></dt>
-<dt><a href="#ShowCode.java.mkd">ShowCode.java.mkd</a></dt>
 </dl>
 <h4>Listings</h4><dl>
 <dt><a href="#top" name="ShowCode.java">^&nbsp;</a>ShowCode.java</dt>
@@ -68,11 +67,10 @@ to describe what is going on
 ShowCode.java.mkd Description</title>
 <tr>
 <td>
-<h2>heading for ShowCode.java</h2>
+<h2>about ShowCode.java</h2>
 
-<p>These are some miscellaneous comments about it.</p>
-
-<p>There should not be too many</p>
+<p>These are some miscellaneous comments about it.
+There should not be too many</p>
 </td>
 </tr>
 </table>
@@ -301,16 +299,29 @@ showcode.sh is the shell script I ran in the build directory to create this page
 </dd>
 <dt><a href="#top" name="showcode.sh">^&nbsp;</a>showcode.sh</dt>
 <dd>
-<pre><code>javad net.dougharris.utility.ShowCode -o ShowCode.html -h ShowCode -p preface -t ShowCode -z ShowCode.zip -m ShowCode.mkd ShowCode.java ShowCode.mkd showcode.sh ShowCode.java.mkd
-
-</code></pre>
-</dd>
-<dt><a href="#top" name="ShowCode.java.mkd">^&nbsp;</a>ShowCode.java.mkd</dt>
 <dd>
-<pre><code>## heading for ShowCode.java
-These are some miscellaneous comments about it.
+<hr>
+<dl>
+<table>
+<title>
+showcode.sh.mkd Description</title>
+<tr>
+<td>
+<h1>about showcode.sh</h1>
 
-There should not be too many
+<p>This is showcode.sh.mkd
+Right now it is shown when the file is specified and it exists.  It does not need to be specified
+in the showcode.sh, and in fact will not be shown if the file is not.</p>
+
+<p>If you actually want it shown when the file is not, just add it to the list.</p>
+</td>
+</tr>
+</table>
+<hr>
+</dd>
+</dl>
+</table>
+<pre><code>javad net.dougharris.utility.ShowCode -o ShowCode.html -h ShowCode -p preface -t ShowCode -z ShowCode.zip -m ShowCode.mkd ShowCode.java ShowCode.mkd showcode.sh 
 
 </code></pre>
 </dd>
