@@ -116,19 +116,19 @@ public class ShowCode{
     b.append(s);
     b.append("</dt>\n");
     b.append("<dd>\n");
-    b.append("<pre><code>");
     makeFileListing(s);
-    b.append("\n</code></pre>\n");
     b.append("</dd>\n");
   }
 
   static public void makeFileListing(String s){
     try{
+      b.append("<pre><code>");
       File f = new File(s);
       char[] a = new char[(int)f.length()];
       FileReader i = new FileReader(f);
       i.read(a);
       b.append(editFileListing(new String(a)));
+      b.append("\n</code></pre>\n");
     } catch(FileNotFoundException x){
       System.err.println(x.getClass().getName()+" says "+x.getMessage());
       System.exit(1);
