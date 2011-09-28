@@ -1,0 +1,247 @@
+<html>
+<head>
+<title>ShowCode, by doug@mscs.mu.edu</title>
+</head>
+<body>
+<h3 align="center">ShowCode</h3>
+<table align="center" width="600">
+<tr>
+<td>
+<h1>This is the code for ShowCode</h1>
+
+<h2>The processor to show your code</h2>
+
+<ol>
+<li>It wraps (and will later colorize) whatever java code you give it</li>
+<li>It wraps everything else you give it</li>
+<li>You can specify a header and title for the page</li>
+<li>It provides links to the files you give it, with return</li>
+<li>You can write your own html in a file by adding -p PREFACEFILE</li>
+<li>You can write your preface in markdown by adding -m PREFACEFILE</li>
+</ol>
+
+<p>ShowCode.java is the source code for the program.</p>
+
+<p>ShowCode.mkd is the markup that shows as the preface to this page</p>
+
+<p>showcode.sh is the shell script I ran in the build directory to create this page</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="ShowCode.zip">zipped source code</a></td>
+</tr>
+<tr>
+<td>
+<h4><a name="top">Code links</a></h4>
+<dl>
+<dt><a href="#ShowCode.java">ShowCode.java</a></dt>
+<dt><a href="#ShowCode.mkd">ShowCode.mkd</a></dt>
+<dt><a href="#showcode.sh">showcode.sh</a></dt>
+</dl>
+<h4>Listings</h4><dl>
+<dt><a href="#top" name="ShowCode.java">^&nbsp;</a>ShowCode.java</dt>
+<dd>
+<pre><code>package net.dougharris.utility;
+
+import com.petebevin.markdown.MarkdownProcessor;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+import java.io.File;
+import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.BufferedInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class ShowCode{
+  static StringBuffer b = new StringBuffer();
+  static Pattern pamp=Pattern.compile("\\&amp;");
+  static Pattern plt=Pattern.compile("\\&lt;");
+  static Pattern pgt=Pattern.compile("\\&gt;");
+  static P cmdArgs;
+
+// changed from throws IOException to throws Exception
+  static public void main(String[] args) throws Exception {
+    String options = "h_t_m_p_z_o_";
+    String usage = 
+      "ShowCode [-t Title] [-h Header] [-z ZipFile] [-o HtmlOutFile] [-m MKDPrefaceFile] codeFile...";
+    cmdArgs = P.arseArgs(options, args);
+
+    String htmlTitle        =  cmdArgs.getProperty("-t", "Title");
+    String htmlHeader       =  cmdArgs.getProperty("-h", "Header");
+    String htmlFileName     = cmdArgs.getProperty("-o", "index.html");
+    String zipFileName      =  cmdArgs.getProperty("-z", "");
+    String prefaceFileName  =  cmdArgs.getProperty("-p", "");
+    String markdownFileName  =  cmdArgs.getProperty("-m", "");
+    FileWriter o = new FileWriter(htmlFileName);
+    args = cmdArgs.getParams();
+    // The args is just a list of files,
+    // in the order in which they are to be shown.
+    // There will be a &lt;dl&gt; and then for each file
+    // a &lt;dt&gt; elements with the fileName
+    // followed by a dd element which contains the file contents
+    // properly wrapped encapsulated within  &lt;pre&gt;&lt;code&gt; tags.
+    b.append("&lt;html&gt;\n");
+    b.append("&lt;head&gt;\n");
+    b.append("&lt;title&gt;");
+    b.append(htmlTitle);
+    b.append(", by doug@mscs.mu.edu");
+    b.append("&lt;/title&gt;\n");
+//    b.append ("&lt;link type=\"text/css\" rel=\"stylesheet\" href=\"/style.css\"&gt;");
+    b.append("&lt;/head&gt;\n");
+    b.append("&lt;body&gt;\n");
+    b.append("&lt;h3 align=\"center\"&gt;");
+    b.append(htmlHeader);
+    b.append("&lt;/h3&gt;\n");
+    b.append("&lt;table align=\"center\" width=\"600\"&gt;\n");
+    if (!markdownFileName.equals("")){
+      doMarkdown(markdownFileName);
+    }
+    if (!prefaceFileName.equals("")){
+      b.append("&lt;tr&gt;\n");
+      b.append("&lt;td&gt;\n");
+      BufferedReader i = new BufferedReader(new FileReader(prefaceFileName));
+      String line;
+      while(null!=(line=i.readLine())){
+        b.append(line);
+        b.append("\n");
+      }
+      b.append("&lt;/td&gt;\n");
+      b.append("&lt;/tr&gt;\n");
+    }
+    if (!zipFileName.equals("")){
+      b.append("&lt;tr&gt;\n");
+      b.append("&lt;td&gt;\n");
+      b.append("&lt;a href=\""+zipFileName+"\"&gt;zipped source code&lt;/a&gt;");
+      b.append("&lt;/td&gt;\n");
+      b.append("&lt;/tr&gt;\n");
+    }
+    b.append("&lt;tr&gt;\n");
+    b.append("&lt;td&gt;\n");
+    b.append("&lt;h4&gt;&lt;a name=\"top\"&gt;Code links&lt;/a&gt;&lt;/h4&gt;\n");
+    b.append("&lt;dl&gt;\n");
+    for (int j = 0;j&lt;args.length;j++){
+      makeFileNameElement(args[j]);
+    }
+    b.append("&lt;/dl&gt;\n");
+    b.append("&lt;h4&gt;Listings&lt;/h4&gt;");
+    b.append("&lt;dl&gt;\n");
+    for (int j = 0;j&lt;args.length;j++){
+      makeFileCodeElement(args[j]);
+    }
+    b.append("&lt;/dl&gt;\n");
+    b.append("&lt;/td&gt;\n");
+    b.append("&lt;/tr&gt;\n");
+    b.append("&lt;/table&gt;\n");
+    b.append("&lt;/body&gt;\n");
+    b.append("&lt;/html&gt;");
+    o.write(b.toString());
+    o.close();
+  }
+
+  static public  void makeFileNameElement(String s){
+    b.append("&lt;dt&gt;&lt;a href=\"#");
+    b.append(s);
+    b.append("\"&gt;");
+    b.append(s);
+    b.append("&lt;/a&gt;&lt;/dt&gt;\n");
+  }
+
+  static public void makeFileCodeElement(String s){
+    b.append("&lt;dt&gt;&lt;a href=\"#top\" name=\"");
+    b.append(s);
+    b.append("\"&gt;^&amp;nbsp;&lt;/a&gt;");
+    b.append(s);
+    b.append("&lt;/dt&gt;\n");
+    b.append("&lt;dd&gt;\n");
+    b.append("&lt;pre&gt;&lt;code&gt;");
+    makeFileListing(s);
+    b.append("\n&lt;/code&gt;&lt;/pre&gt;\n");
+    b.append("&lt;/dd&gt;\n");
+  }
+
+  static public void makeFileListing(String s){
+    try{
+      File f = new File(s);
+      char[] a = new char[(int)f.length()];
+      FileReader i = new FileReader(f);
+      i.read(a);
+      b.append(editFileListing(new String(a)));
+    } catch(FileNotFoundException x){
+      System.err.println(x.getClass().getName()+" says "+x.getMessage());
+      System.exit(1);
+    } catch(IOException x){
+      System.err.println(x.getClass().getName()+" says "+x.getMessage());
+      System.exit(2);
+    }
+  }
+
+  static public String editFileListing(String s){
+    s = (pamp.matcher(s)).replaceAll("\\&amp;amp;");
+    s = (plt.matcher(s)).replaceAll("\\&amp;lt;");
+    s = (pgt.matcher(s)).replaceAll("\\&amp;gt;");
+    return s;
+  }
+
+  static public void doPreface(String prefaceFileName){
+  }
+  static public void doMarkdown(String markdownFileName) throws Exception{ 
+    b.append("&lt;tr&gt;\n");
+    b.append("&lt;td&gt;\n");
+    FileInputStream i = new FileInputStream(markdownFileName);
+    String in = allin(i);
+
+    MarkdownProcessor m = new MarkdownProcessor();
+    b.append(m.markdown(in));
+    b.append("&lt;/td&gt;\n");
+    b.append("&lt;/tr&gt;\n");
+  }
+
+  static public String allin(FileInputStream i) throws Exception{
+    char[] b = new char[i.available()];
+    InputStreamReader r = new InputStreamReader(i);  
+    r.read(b);  
+    return(new String(b));
+  }
+}
+
+</code></pre>
+</dd>
+<dt><a href="#top" name="ShowCode.mkd">^&nbsp;</a>ShowCode.mkd</dt>
+<dd>
+<pre><code># This is the code for ShowCode #
+## The processor to show your code ##
+1. It wraps (and will later colorize) whatever java code you give it
+2. It wraps everything else you give it
+3. You can specify a header and title for the page
+4. It provides links to the files you give it, with return
+5. You can write your own html in a file by adding -p PREFACEFILE
+6. You can write your preface in markdown by adding -m PREFACEFILE
+
+ShowCode.java is the source code for the program.
+
+ShowCode.mkd is the markup that shows as the preface to this page
+
+showcode.sh is the shell script I ran in the build directory to create this page
+
+</code></pre>
+</dd>
+<dt><a href="#top" name="showcode.sh">^&nbsp;</a>showcode.sh</dt>
+<dd>
+<pre><code>javad net.dougharris.utility.ShowCode -o ShowCode.html -h ShowCode -t ShowCode -z ShowCode.zip -m ShowCode.mkd ShowCode.java ShowCode.mkd showcode.sh
+
+</code></pre>
+</dd>
+</dl>
+</td>
+</tr>
+</table>
+</body>
+</html>

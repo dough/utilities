@@ -1,0 +1,14 @@
+# This is the code for ShowCode #
+## The processor to show your code ##
+1. It wraps (and will later colorize) whatever java code you give it
+2. It wraps everything else you give it
+3. You can specify a header and title for the page
+4. It provides links to the files you give it, with return
+5. You can write your own html in a file by adding -p PREFACEFILE
+6. You can write your preface in markdown by adding -m PREFACEFILE
+
+ShowCode.java is the source code for the program.
+
+ShowCode.mkd is the markup that shows as the preface to this page
+
+showcode.sh is the shell script I ran in the build directory to create this page
