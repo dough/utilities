@@ -58,17 +58,16 @@ public class ShowCode{
     b.append("</h3>\n");
     b.append("<table align=\"center\" width=\"600\">\n");
     if (!markdownFileName.equals("")){
+      b.append("<tr>\n");
+      b.append("<td>\n");
       doMarkdown(markdownFileName);
+      b.append("</td>\n");
+      b.append("</tr>\n");
     }
     if (!prefaceFileName.equals("")){
       b.append("<tr>\n");
       b.append("<td>\n");
-      BufferedReader i = new BufferedReader(new FileReader(prefaceFileName));
-      String line;
-      while(null!=(line=i.readLine())){
-        b.append(line);
-        b.append("\n");
-      }
+      doPreface(prefaceFileName);
       b.append("</td>\n");
       b.append("</tr>\n");
     }
@@ -146,8 +145,19 @@ public class ShowCode{
     return s;
   }
 
-  static public void doPreface(String prefaceFileName){
+  static public void doPreface(String prefaceFileName) throws Exception{
+    b.append("<tr>\n");
+    b.append("<td>\n");
+    BufferedReader i = new BufferedReader(new FileReader(prefaceFileName));
+    String line;
+    while(null!=(line=i.readLine())){
+      b.append(line);
+      b.append("\n");
+    }
+    b.append("</td>\n");
+    b.append("</tr>\n");
   }
+
   static public void doMarkdown(String markdownFileName) throws Exception{ 
     b.append("<tr>\n");
     b.append("<td>\n");
