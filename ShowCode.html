@@ -7,6 +7,8 @@
 <table align="center" width="600">
 <tr>
 <td>
+<tr>
+<td>
 <h1>This is the code for ShowCode</h1>
 
 <h2>The processor to show your code</h2>
@@ -27,6 +29,21 @@
 <p>showcode.sh is the shell script I ran in the build directory to create this page</p>
 </td>
 </tr>
+</td>
+</tr>
+<tr>
+<td>
+<tr>
+<td>
+<h4>preface</h4>
+<p>
+Just to show you can have a preface and a markdown
+to describe what is going on
+</p>
+</td>
+</tr>
+</td>
+</tr>
 <tr>
 <td>
 <a href="ShowCode.zip">zipped source code</a></td>
@@ -38,10 +55,31 @@
 <dt><a href="#ShowCode.java">ShowCode.java</a></dt>
 <dt><a href="#ShowCode.mkd">ShowCode.mkd</a></dt>
 <dt><a href="#showcode.sh">showcode.sh</a></dt>
+<dt><a href="#ShowCode.java.mkd">ShowCode.java.mkd</a></dt>
 </dl>
 <h4>Listings</h4><dl>
 <dt><a href="#top" name="ShowCode.java">^&nbsp;</a>ShowCode.java</dt>
 <dd>
+<dd>
+<hr>
+<dl>
+<table>
+<title>
+ShowCode.java.mkd Description</title>
+<tr>
+<td>
+<h2>heading for ShowCode.java</h2>
+
+<p>These are some miscellaneous comments about it.</p>
+
+<p>There should not be too many</p>
+</td>
+</tr>
+</table>
+<hr>
+</dd>
+</dl>
+</table>
 <pre><code>package net.dougharris.utility;
 
 import com.petebevin.markdown.MarkdownProcessor;
@@ -94,28 +132,29 @@ public class ShowCode{
     b.append(htmlTitle);
     b.append(", by doug@mscs.mu.edu");
     b.append("&lt;/title&gt;\n");
-//    b.append ("&lt;link type=\"text/css\" rel=\"stylesheet\" href=\"/style.css\"&gt;");
     b.append("&lt;/head&gt;\n");
     b.append("&lt;body&gt;\n");
     b.append("&lt;h3 align=\"center\"&gt;");
     b.append(htmlHeader);
     b.append("&lt;/h3&gt;\n");
     b.append("&lt;table align=\"center\" width=\"600\"&gt;\n");
+
     if (!markdownFileName.equals("")){
-      doMarkdown(markdownFileName);
-    }
-    if (!prefaceFileName.equals("")){
       b.append("&lt;tr&gt;\n");
       b.append("&lt;td&gt;\n");
-      BufferedReader i = new BufferedReader(new FileReader(prefaceFileName));
-      String line;
-      while(null!=(line=i.readLine())){
-        b.append(line);
-        b.append("\n");
-      }
+      doMarkdown(markdownFileName);
       b.append("&lt;/td&gt;\n");
       b.append("&lt;/tr&gt;\n");
     }
+
+    if (!prefaceFileName.equals("")){
+      b.append("&lt;tr&gt;\n");
+      b.append("&lt;td&gt;\n");
+      doPreface(prefaceFileName);
+      b.append("&lt;/td&gt;\n");
+      b.append("&lt;/tr&gt;\n");
+    }
+
     if (!zipFileName.equals("")){
       b.append("&lt;tr&gt;\n");
       b.append("&lt;td&gt;\n");
@@ -123,6 +162,8 @@ public class ShowCode{
       b.append("&lt;/td&gt;\n");
       b.append("&lt;/tr&gt;\n");
     }
+
+// Creating the Code links section
     b.append("&lt;tr&gt;\n");
     b.append("&lt;td&gt;\n");
     b.append("&lt;h4&gt;&lt;a name=\"top\"&gt;Code links&lt;/a&gt;&lt;/h4&gt;\n");
@@ -131,11 +172,15 @@ public class ShowCode{
       makeFileNameElement(args[j]);
     }
     b.append("&lt;/dl&gt;\n");
+
+// Creating the Listings
     b.append("&lt;h4&gt;Listings&lt;/h4&gt;");
     b.append("&lt;dl&gt;\n");
+// Creating the wrapped code Listings
     for (int j = 0;j&lt;args.length;j++){
       makeFileCodeElement(args[j]);
     }
+
     b.append("&lt;/dl&gt;\n");
     b.append("&lt;/td&gt;\n");
     b.append("&lt;/tr&gt;\n");
@@ -154,44 +199,65 @@ public class ShowCode{
     b.append("&lt;/a&gt;&lt;/dt&gt;\n");
   }
 
-  static public void makeFileCodeElement(String s){
+  static public void makeFileCodeElement(String s) throws Exception{
     b.append("&lt;dt&gt;&lt;a href=\"#top\" name=\"");
     b.append(s);
     b.append("\"&gt;^&amp;nbsp;&lt;/a&gt;");
     b.append(s);
     b.append("&lt;/dt&gt;\n");
     b.append("&lt;dd&gt;\n");
-    b.append("&lt;pre&gt;&lt;code&gt;");
     makeFileListing(s);
-    b.append("\n&lt;/code&gt;&lt;/pre&gt;\n");
     b.append("&lt;/dd&gt;\n");
   }
 
-  static public void makeFileListing(String s){
-    try{
+  static public void makeFileListing(String s) throws Exception{
+      String descFileName = s+".mkd";
+      File fm = new File(descFileName);
+      if (fm.exists()){
+        b.append("&lt;dd&gt;\n");
+        b.append("&lt;hr&gt;\n");
+        b.append("&lt;dl&gt;\n");
+        b.append("&lt;table&gt;\n");
+        b.append("&lt;title&gt;\n");
+        b.append(descFileName);
+        b.append(" Description");
+        b.append("&lt;/title&gt;\n");
+        doMarkdown(descFileName);       
+        b.append("&lt;/table&gt;\n");
+        b.append("&lt;hr&gt;\n");
+        b.append("&lt;/dd&gt;\n");
+        b.append("&lt;/dl&gt;\n");
+        b.append("&lt;/table&gt;\n");
+      }
+      b.append("&lt;pre&gt;&lt;code&gt;");
       File f = new File(s);
       char[] a = new char[(int)f.length()];
       FileReader i = new FileReader(f);
       i.read(a);
       b.append(editFileListing(new String(a)));
-    } catch(FileNotFoundException x){
-      System.err.println(x.getClass().getName()+" says "+x.getMessage());
-      System.exit(1);
-    } catch(IOException x){
-      System.err.println(x.getClass().getName()+" says "+x.getMessage());
-      System.exit(2);
-    }
+      b.append("\n&lt;/code&gt;&lt;/pre&gt;\n");
   }
 
-  static public String editFileListing(String s){
+  static public String editFileListing(String s) throws Exception{
     s = (pamp.matcher(s)).replaceAll("\\&amp;amp;");
     s = (plt.matcher(s)).replaceAll("\\&amp;lt;");
     s = (pgt.matcher(s)).replaceAll("\\&amp;gt;");
     return s;
   }
 
-  static public void doPreface(String prefaceFileName){
+  static public void doPreface(String prefaceFileName) throws Exception{
+    b.append("&lt;tr&gt;\n");
+    b.append("&lt;td&gt;\n");
+    BufferedReader i = new BufferedReader(new FileReader(prefaceFileName));
+    String line;
+    while(null!=(line=i.readLine())){
+      b.append(line);
+      b.append("\n");
+    }
+    b.append("&lt;/td&gt;\n");
+    b.append("&lt;/tr&gt;\n");
   }
+
   static public void doMarkdown(String markdownFileName) throws Exception{ 
     b.append("&lt;tr&gt;\n");
     b.append("&lt;td&gt;\n");
@@ -235,7 +301,16 @@ showcode.sh is the shell script I ran in the build directory to create this page
 </dd>
 <dt><a href="#top" name="showcode.sh">^&nbsp;</a>showcode.sh</dt>
 <dd>
-<pre><code>javad net.dougharris.utility.ShowCode -o ShowCode.html -h ShowCode -t ShowCode -z ShowCode.zip -m ShowCode.mkd ShowCode.java ShowCode.mkd showcode.sh
+<pre><code>javad net.dougharris.utility.ShowCode -o ShowCode.html -h ShowCode -p preface -t ShowCode -z ShowCode.zip -m ShowCode.mkd ShowCode.java ShowCode.mkd showcode.sh ShowCode.java.mkd
+
+</code></pre>
+</dd>
+<dt><a href="#top" name="ShowCode.java.mkd">^&nbsp;</a>ShowCode.java.mkd</dt>
+<dd>
+<pre><code>## heading for ShowCode.java
+These are some miscellaneous comments about it.
+
+There should not be too many
 
 </code></pre>
 </dd>
