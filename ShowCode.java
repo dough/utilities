@@ -133,9 +133,16 @@ public class ShowCode{
       File fm = new File(descFileName);
       if (fm.exists()){
         b.append("<dd>\n");
+        b.append("<hr>\n");
         b.append("<dl>\n");
         b.append("<table>\n");
+        b.append("<title>\n");
+        b.append(descFileName);
+        b.append(" Description");
+        b.append("</title>\n");
         doMarkdown(descFileName);       
+        b.append("</table>\n");
+        b.append("<hr>\n");
         b.append("</dd>\n");
         b.append("</dl>\n");
         b.append("</table>\n");
